@@ -1,0 +1,10 @@
+asgiref==3.6.0
+Django==4.1.7
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
+PyJWT==2.6.0
+pyotp==2.8.0
+pytz==2022.7.1
+PyYAML==6.0
+sqlparse==0.4.3
+uritemplate==4.1.1
