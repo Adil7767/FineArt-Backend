@@ -4,21 +4,28 @@ from django.utils.encoding import smart_str, force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
+import random
+
+
+def random_with_N_digits(n):
+    range_start = 10 ** (n - 1)
+    range_end = (10 ** n) - 1
+    return random.randint(range_start, range_end)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'gender', 'phone_number', 'password', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'gender', 'phone_number', 'password', 'confirm_password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def validate(self, attrs):
         password = attrs.get('password')
-        password2 = attrs.get('password2')
+        password2 = attrs.get('confirm_password')
         if password != password2:
             raise serializers.ValidationError("Password and Confirm Password Doesn't match.")
         return attrs
@@ -42,21 +49,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserChangePasswordSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(max_length=255, style={'input_type': 'password'})
+    previous_password = serializers.CharField(max_length=255, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(max_length=255, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['password', 'password2']
-
-    def validate(self, attrs):
-        password = attrs.get('password')
-        password2 = attrs.get('password2')
-        user = self.context.get('user')
-        if password != password2:
-            raise serializers.ValidationError("Password and Confirm Password Doesn't match.")
-        user.set_password(password)
-        user.save()
-        return attrs
+        fields = ['previous_password', 'password', 'confirm_password']
 
 
 class SendResetPasswordSerializer(serializers.Serializer):
@@ -69,13 +67,14 @@ class SendResetPasswordSerializer(serializers.Serializer):
         email = attrs.get('email')
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
-            uid = urlsafe_base64_encode(force_bytes(user.id))
-            token = PasswordResetTokenGenerator().make_token(user)
-            link = 'http://127.0.0.1:8000/api/send-reset-password-email/'+uid+'/'+token
+            otp = random_with_N_digits(6)
+            user.otp = otp
+            user.save()
+            msg = 'Your 6 Digit Verification Pin: {}'.format(otp)
             send_mail(
                 'Reset Your Password',
-                link,
-                'enigmatixbahawalpur@gmail.com',
+                msg,
+                'shahzadkulachi08@gmail.com',
                 [user.email],
                 fail_silently=False,
             )
@@ -85,23 +84,9 @@ class SendResetPasswordSerializer(serializers.Serializer):
 
 
 class UserPasswordResetSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(max_length=255, style={'input_type': 'password'})
+    otp = serializers.IntegerField()
+    confirm_password = serializers.CharField(max_length=255, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['password', 'password2']
-
-    def validate(self, attrs):
-        password = attrs.get('password')
-        password2 = attrs.get('password2')
-        uid = self.context.get('uid')
-        token = self.context.get('token')
-        if password != password2:
-            raise serializers.ValidationError("Password and Confirm Password Doesn't match")
-        id = smart_str(urlsafe_base64_decode(uid))
-        user = User.objects.get(id=id)
-        if not PasswordResetTokenGenerator().check_token(user, token):
-            raise serializers.ValidationError('Token is not valid or Expired')
-        user.set_password(password)
-        user.save()
-        return attrs
+        fields = ['otp', 'password', 'confirm_password']

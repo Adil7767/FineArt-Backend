@@ -12,7 +12,7 @@ router.register('login', UserLoginView, basename='login')
 router.register('profile', UserProfileView, basename='profile')
 router.register('change-password', UserChangePasswordView, basename='change-password')
 router.register('send-reset-password-email', SendResetPasswordView, basename='send-password')
-router.register('reset-password/<uid>/<token>', UserPasswordResetView, basename='reset-password')
+router.register('reset-password', UserPasswordResetView, basename='reset-password')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

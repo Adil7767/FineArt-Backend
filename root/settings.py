@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-o@^5n@^zdtu_l&yc7gv%2!wsdr1^n!lih+38q@0ed_zgm%xedd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['e6e2-39-53-107-85.eu.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = ['a41d-39-53-124-142.eu.ngrok.io', '127.0.0.1']
 
 
 # Application definition
@@ -132,11 +132,10 @@ AUTH_USER_MODEL = 'account.User'
 PASSWORD_RESET_TIMEOUT = 900   # 15 min
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'enigmatixbahawalpur@gmail.com'
-EMAIL_HOST_PASSWORD = 'sgqwijdstcvpsglq'
+EMAIL_HOST_USER = 'shahzadkulachi08@gmail.com'
+EMAIL_HOST_PASSWORD = 'pltmnjoosyhbwgkf'
 EMAIL_USE_TLS = True
 
 REST_FRAMEWORK = {
@@ -147,7 +146,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
