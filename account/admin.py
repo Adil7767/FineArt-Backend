@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User
+from account.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
@@ -10,12 +10,14 @@ class UserModelAdmin(BaseUserAdmin):
         ('User Credentials', {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'gender', 'phone_number')}),
         ('Permissions', {'fields': ('is_admin',)}),
+        ('OTP', {'fields': ('otp',)}),
+
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2'),
+            'fields': ('email', 'first_name', 'last_name', 'password1', 'confirm_password'),
         }),
     )
     search_fields = ('email',)

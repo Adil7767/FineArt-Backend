@@ -4,9 +4,9 @@ from django.core.validators import RegexValidator
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, gender, phone_number, password=None, password2=None):
+    def create_user(self, email, first_name, last_name, gender, phone_number, password=None, confirm_password=None):
         """
-        Creates and saves a User with the given email, name, password and password2.
+        Creates and saves a User with the given email, name, password and confirm_password.
         """
         if not email:
             raise ValueError('User must have an email address')
@@ -52,6 +52,7 @@ class User(AbstractBaseUser):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 11 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=11)
+    otp = models.IntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
