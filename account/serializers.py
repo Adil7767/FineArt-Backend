@@ -1,8 +1,5 @@
 from rest_framework import serializers
-from .models import User
-from django.utils.encoding import smart_str, force_bytes
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from .models import *
 from django.core.mail import send_mail
 import random
 

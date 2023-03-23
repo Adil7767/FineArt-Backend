@@ -20,6 +20,7 @@ class UserRegistrationView(viewsets.ModelViewSet):
     http_method_names = ['post']
     serializer_class = UserRegistrationSerializer
     renderer_classes = [UserRenderer]
+    permission_classes = [AllowAny]
 
     def create(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
@@ -34,6 +35,7 @@ class UserLoginView(viewsets.ModelViewSet):
     http_method_names = ['post']
     serializer_class = UserLoginSerializer
     renderer_classes = [UserRenderer]
+    permission_classes = [AllowAny]
 
     def create(self, request):
         serializer = UserLoginSerializer(data=request.data)
