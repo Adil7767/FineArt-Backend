@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.flac
 .idea
 media
 generate_dummy_data.py

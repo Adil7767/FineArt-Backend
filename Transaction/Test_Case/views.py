@@ -55,23 +55,28 @@ class TypeTests(APITestCase):
 
     def test_admin_update_type(self):
         data = {'add_type': 'Updated Type'}
-        response = self.client_admin.put(reverse('type-detail', args=[self.type1.pk]), data)
+        response = self.client_admin.put(
+            reverse('type-detail', args=[self.type1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Type.objects.get(pk=self.type1.pk).add_type, 'Updated Type')
+        self.assertEqual(Type.objects.get(pk=self.type1.pk)
+                         .add_type, 'Updated Type')
 
     def test_user_update_type(self):
         data = {'add_type': 'Updated Type'}
-        response = self.client_user.put(reverse('type-detail', args=[self.type1.pk]), data)
+        response = self.client_user.put(
+            reverse('type-detail', args=[self.type1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Type.objects.get(pk=self.type1.pk).add_type, 'Type 1')
 
     def test_admin_delete_type(self):
-        response = self.client_admin.delete(reverse('type-detail', args=[self.type1.pk]))
+        response = self.client_admin.delete(
+            reverse('type-detail', args=[self.type1.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Type.objects.count(), 1)
 
     def test_user_delete_type(self):
-        response = self.client_user.delete(reverse('type-detail', args=[self.type1.pk]))
+        response = self.client_user.delete(
+            reverse('type-detail', args=[self.type1.pk]))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Type.objects.count(), 2)
 
@@ -97,8 +102,14 @@ class CategoryTests(APITestCase):
         self.client_admin.force_authenticate(user=self.admin)
         self.client_user = APIClient()
         self.client_user.force_authenticate(user=self.user)
-        self.category1 = Category.objects.create(new_category='Food', icons='/home/shahzad/Documents/clone_Api/media/1674243678808.jpeg', color='#FFFFFFFF')
-        self.category2 = Category.objects.create(new_category='Food', icons='/home/shahzad/Documents/clone_Api/media/1674243678808.jpeg', color='#FFFFFFFF')
+        self.category1 = Category.objects.create(
+            new_category='Food',
+            icons='/home/shahzad/Documents/clone_Api/media/1674243678808.jpeg',
+            color='#FFFFFFFF')
+        self.category2 = Category.objects.create(
+            new_category='Food',
+            icons='/home/shahzad/Documents/clone_Api/media/1674243678808.jpeg',
+            color='#FFFFFFFF')
 
     def test_admin_get_category_list(self):
         response = self.client_admin.get(reverse('category-list'))
@@ -123,22 +134,27 @@ class CategoryTests(APITestCase):
 
     def test_admin_update_category(self):
         data = {'new_category': 'Updated Type'}
-        response = self.client_admin.put(reverse('category-detail', args=[self.category1.pk]), data)
+        response = self.client_admin.put(
+            reverse('category-detail', args=[self.category1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Category.objects.get(pk=self.category1.pk).new_category, 'Updated Type')
+        self.assertEqual(Category.objects.get(pk=self.category1.pk)
+                         .new_category, 'Updated Type')
 
     def test_user_update_category(self):
         data = {'new_category': 'Updated Type'}
-        response = self.client_user.put(reverse('category-detail', args=[self.category1.pk]), data)
+        response = self.client_user.put(
+            reverse('category-detail', args=[self.category1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_admin_delete_category(self):
-        response = self.client_admin.delete(reverse('category-detail', args=[self.category1.pk]))
+        response = self.client_admin.delete(
+            reverse('category-detail', args=[self.category1.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Category.objects.count(), 1)
 
     def test_user_delete_category(self):
-        response = self.client_user.delete(reverse('category-detail', args=[self.category1.pk]))
+        response = self.client_user.delete(
+            reverse('category-detail', args=[self.category1.pk]))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Category.objects.count(), 2)
 
@@ -190,21 +206,27 @@ class PaymentTests(APITestCase):
 
     def test_admin_update_payment(self):
         data = {'payment_method': 'Updated Type'}
-        response = self.client_admin.put(reverse('payments-detail', args=[self.payment1.pk]), data)
+        response = self.client_admin.put(
+            reverse('payments-detail', args=[self.payment1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Payment.objects.get(pk=self.payment1.pk).payment_method, 'Updated Type')
+        self.assertEqual(Payment.objects.get(pk=self.payment1.pk)
+                         .payment_method, 'Updated Type')
 
     def test_user_update_payment(self):
         data = {'payment_method': 'Updated Type'}
-        response = self.client_user.put(reverse('payments-detail', args=[self.payment1.pk]), data)
+        response = self.client_user.put(
+            reverse('payments-detail', args=[self.payment1.pk]), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_admin_delete_payment(self):
-        response = self.client_admin.delete(reverse('payments-detail', args=[self.payment1.pk]))
+        response = self.client_admin.delete(
+            reverse('payments-detail', args=[self.payment1.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Payment.objects.count(), 1)
 
     def test_user_delete_payment(self):
-        response = self.client_user.delete(reverse('payments-detail', args=[self.payment1.pk]))
+        response = self.client_user.delete(
+            reverse('payments-detail', args=[self.payment1.pk]))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Payment.objects.count(), 2)
 
@@ -222,7 +244,8 @@ class TransactionViewTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         self.type = Type.objects.create(add_type='Income')
         self.payment_method = Payment.objects.create(payment_method='Paypal')
-        self.category = Category.objects.create(new_category='Food', color='#FFFFFFFF')
+        self.category = Category.objects.create(new_category='Food',
+                                                color='#FFFFFFFF')
         self.transaction = Add_Transaction.objects.create(
             user=self.user,
             type=self.type,
@@ -240,11 +263,13 @@ class TransactionViewTestCase(APITestCase):
         response_data = response.data['results']
         self.assertEqual(response_data[0]['id'], self.user.id)
         self.assertEqual(response_data[0]['type'], self.type.id)
-        self.assertEqual(response_data[0]['payment_method'], self.payment_method.id)
+        self.assertEqual(response_data[0]['payment_method'],
+                         self.payment_method.id)
         self.assertEqual(response_data[0]['description'], 'Test transaction')
         self.assertEqual(response_data[0]['category'], self.category.id)
         self.assertEqual(response_data[0]['amount'], '10.50')
-        self.assertEqual(response_data[0]['frequency'], Add_Transaction.NON_RECURRING)
+        self.assertEqual(response_data[0]['frequency'],
+                         Add_Transaction.NON_RECURRING)
 
     def test_create_transaction(self):
         data = {
