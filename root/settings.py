@@ -139,8 +139,8 @@ PASSWORD_RESET_TIMEOUT = 900   # 15 min
 # Email Configuration
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'shahzadkulachi08@gmail.com'
-EMAIL_HOST_PASSWORD = 'pltmnjoosyhbwgkf'
+EMAIL_HOST_USER = 'YourGmail@gmail.com'
+EMAIL_HOST_PASSWORD = 'Your Password'
 EMAIL_USE_TLS = True
 
 REST_FRAMEWORK = {
