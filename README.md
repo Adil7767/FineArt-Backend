@@ -40,27 +40,67 @@ Install the project requirements:
 pip install -r requirements.txt
 ```
 
+## Commands (Django)
+
+Run these from the **FineArt-Backend** directory (with venv activated), or use the **yarn** shortcuts from the **repo root** (see main [README.md](../README.md)).
+
+| What | Django (from `FineArt-Backend/`) | From repo root (yarn) |
+|------|----------------------------------|------------------------|
+| **Seed DB** (migrate + test user + types/categories/payments) | `python manage.py seed_db` | `yarn seed` or `yarn backend:seed` |
+| **Run API server** | `python manage.py runserver 0.0.0.0:8000` | `yarn backend:run` |
+| **Migrations only** | `python manage.py migrate` | `yarn backend:migrate` |
+| **Django shell** | `python manage.py shell` | `yarn backend:shell` |
+| **Create superuser** (admin) | `python manage.py createsuperuser` | — (run from backend dir) |
+
+On **Windows**, if `yarn seed` fails (e.g. `python3` not found), run the Django commands from `FineArt-Backend` using `python` instead of `python3`, or set up the venv and use `.\env\Scripts\python manage.py seed_db`.
+
+---
+
 ## Running the Project
 
-Before running the project, make sure to apply the migrations:
+Before running the project, create the database and optionally seed it with a test user and data.
+
+**Option A — Create DB and seed in one step (recommended for local/dev):**
+
+From **FineArt-Backend** (with venv activated):
+
+```bash
+python manage.py seed_db
+```
+
+Or from **repo root** (uses `python3` from PATH):
+
+```bash
+yarn seed
+```
+
+This runs migrations, creates a test user, and seeds types, categories, and payment methods. Use these credentials to log in to the AdArt app:
+
+| Field    | Value              |
+|----------|--------------------|
+| **Email**    | `dev.adil786@gmail.com` |
+| **Password** | `AdArtDemo123!`        |
+
+**Option B — Manual setup:**
 
 ```bash
 python manage.py migrate
+python manage.py createsuperuser   # for Django admin and admin-only APIs
 ```
 
-Create a superuser (required for Django admin and for admin-only APIs: type, category, payments):
+**Start the development server:**
+
+From **FineArt-Backend**:
 
 ```bash
-python manage.py createsuperuser
+python manage.py runserver 0.0.0.0:8000
 ```
 
-Start the development server:
+Or from **repo root**:
 
 ```bash
-python manage.py runserver
+yarn backend:run
 ```
-
-<!-- To allow the mobile app or other devices on the network to reach the API, use: python manage.py runserver 0.0.0.0:8000 -->
 
 This will start the server at http://127.0.0.1:8000/. You can then access the APIs by navigating to http://127.0.0.1:8000/api/
 
@@ -103,8 +143,9 @@ You can access these APIs using the appropriate HTTP methods (GET, POST, PUT, DE
 | **transaction** | GET/POST | List or create transactions | POST: `type`, `payment_method`, `description`, `category`, `amount`, `image?`, `frequency?` |
 | **transaction** | GET/PUT/DELETE | Single transaction | `/transaction/<id>/` |
 | **total-transaction** | POST | Totals by type | `trans_type` (type id) |
+| **chart-stats** | GET | Chart data (line + pie) for logged-in user | — (auth required) |
 
-Type, category, and payment CRUD are admin-only (IsAdminUser). Transaction and profile are user-scoped. For more details, refer to the code documentation.
+Type, category, and payment CRUD are admin-only (IsAdminUser). Transaction and profile are user-scoped. `chart-stats` returns monthly totals and category breakdown for the app charts. For more details, refer to the code documentation.
 
 ## Celery (optional)
 

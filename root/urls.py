@@ -7,7 +7,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
 from account.views import *
-from Transaction.views import *
+from Transaction.views import *  # noqa: F401,F403
+from Transaction.views import chart_stats_view
 
 
 router = DefaultRouter()
@@ -28,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/chart-stats/', chart_stats_view, name='chart-stats'),
 
     path('openapi', get_schema_view(
         title="Your Project",

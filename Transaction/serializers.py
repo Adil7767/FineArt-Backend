@@ -5,19 +5,19 @@ from .models import *
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ['add_type']
+        fields = ['id', 'add_type']
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['new_category', 'icons', 'color']
+        fields = ['id', 'new_category', 'icons', 'color']
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['icons', 'payment_method']
+        fields = ['id', 'icons', 'payment_method']
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -32,7 +32,4 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class TotalTransactionSerializer(serializers.Serializer):
-    trans_type = serializers.CharField(max_length=255)
-
-    class Meta:
-        fields = ['trans_type']
+    trans_type = serializers.IntegerField()

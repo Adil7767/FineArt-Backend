@@ -73,7 +73,7 @@ class UserChangePasswordView(viewsets.ModelViewSet):
             confirm_password = serializer.data.get('confirm_password')
             previous_password = serializer.data.get('previous_password')
             user0 = request.user
-            user = authenticate(email=user0, password=previous_password)
+            user = authenticate(email=user0.email, password=previous_password)
             if user is not None:
                 if password != confirm_password:
                     raise serializers.ValidationError("Password and Confirm Password Doesn't match.")
