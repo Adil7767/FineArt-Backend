@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
 from account.views import *
@@ -26,6 +27,7 @@ router.register('total-transaction', TotalTransactionView, basename='Total-Trans
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('openapi', get_schema_view(
         title="Your Project",
