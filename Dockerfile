@@ -1,4 +1,4 @@
-# Use Python 3.10 as base image
+# FineArt-Backend — Python 3.10 for compatibility with requirements (Pillow, PyYAML, etc.)
 FROM python:3.10
 
 # Set working directory

@@ -1,11 +1,20 @@
 import json
 from django.db import models
 from colorfield.fields import ColorField
-from django_celery_beat.models import PeriodicTask, CrontabSchedule
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from account.models import User
+
+# Optional: avoid importing django_celery_beat at module load so runserver can start
+# even when Celery has import issues (e.g. current_app on some Python/Celery versions).
+try:
+    from django_celery_beat.models import PeriodicTask, CrontabSchedule
+    _CELERY_BEAT_AVAILABLE = True
+except Exception:
+    PeriodicTask = None
+    CrontabSchedule = None
+    _CELERY_BEAT_AVAILABLE = False
 
 
 class Type(models.Model):
@@ -65,60 +74,57 @@ class Add_Transaction(models.Model):
 
 @receiver(post_save, sender=Add_Transaction)
 def regenerate_trans(sender, instance, created, **kwargs):
-    if created:
-        if instance.frequency == 'daily':
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour,
-                                                                      minute=instance.created_at.minute)
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
-        elif instance.frequency == 'weekly':
-            transaction_date = timezone.now().date().weekday()
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
-                                                                      minute=instance.created_at.minute,
-                                                                      day_of_week=transaction_date)
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
-
-        elif instance.frequency == 'monthly':
-            transaction_date = timezone.now().date().day
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
-                                                                      minute=instance.created_at.minute,
-                                                                      day_of_month=transaction_date)
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
-
-        elif instance.frequency == 'every_three_months':
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
-                                                                      minute=instance.created_at.minute,
-                                                                      day_of_month="*/3")
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
-
-        elif instance.frequency == 'every_six_months':
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
-                                                                      minute=instance.created_at.minute,
-                                                                      day_of_month="*/6")
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
-
-        elif instance.frequency == 'yearly':
-            transaction_date = timezone.now().date().month
-            date = timezone.now().date().day
-            schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
-                                                                      minute=instance.created_at.minute,
-                                                                      month_of_year=transaction_date,
-                                                                      day_of_month=date)
-            task = PeriodicTask.objects.create(crontab=schedule,
-                                               name="daily-regenerate-existing-data-" + str(instance.id),
-                                               task="Transaction.tasks.regenerate_transaction",
-                                               args=json.dumps((instance.id,)))
+    if not _CELERY_BEAT_AVAILABLE or not created:
+        return
+    if instance.frequency == 'daily':
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour,
+                                                                  minute=instance.created_at.minute)
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))
+    elif instance.frequency == 'weekly':
+        transaction_date = timezone.now().date().weekday()
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
+                                                                  minute=instance.created_at.minute,
+                                                                  day_of_week=transaction_date)
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))
+    elif instance.frequency == 'monthly':
+        transaction_date = timezone.now().date().day
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
+                                                                  minute=instance.created_at.minute,
+                                                                  day_of_month=transaction_date)
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))
+    elif instance.frequency == 'every_three_months':
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
+                                                                  minute=instance.created_at.minute,
+                                                                  day_of_month="*/3")
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))
+    elif instance.frequency == 'every_six_months':
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
+                                                                  minute=instance.created_at.minute,
+                                                                  day_of_month="*/6")
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))
+    elif instance.frequency == 'yearly':
+        transaction_date = timezone.now().date().month
+        date = timezone.now().date().day
+        schedule, created = CrontabSchedule.objects.get_or_create(hour=instance.created_at.hour+5,
+                                                                  minute=instance.created_at.minute,
+                                                                  month_of_year=transaction_date,
+                                                                  day_of_month=date)
+        task = PeriodicTask.objects.create(crontab=schedule,
+                                           name="daily-regenerate-existing-data-" + str(instance.id),
+                                           task="Transaction.tasks.regenerate_transaction",
+                                           args=json.dumps((instance.id,)))

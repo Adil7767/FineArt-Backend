@@ -31,6 +31,12 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+# Only add django_celery_beat if Celery imports successfully (avoids current_app import error on some setups).
+try:
+    from celery import current_app  # noqa: F401
+    _CELERY_OK = True
+except Exception:
+    _CELERY_OK = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,8 +51,9 @@ INSTALLED_APPS = [
     'Transaction',
     # 'debug_toolbar',
     'colorfield',
-    'django_celery_beat',
 ]
+if _CELERY_OK:
+    INSTALLED_APPS.append('django_celery_beat')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -177,5 +184,5 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = "Asia/Karachi"
-
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+if _CELERY_OK:
+    CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

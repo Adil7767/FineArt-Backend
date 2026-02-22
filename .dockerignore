@@ -1,0 +1,24 @@
+# Virtual env and local Python
+env/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Local DB (container will use its own or a volume)
+db.sqlite3
+*.sqlite3
+
+# Git and IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+*.md
+
+# Tests and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.log

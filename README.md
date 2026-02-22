@@ -6,7 +6,7 @@ This is a backend project developed using Django Rest Framework for managing exp
 
 ## Installation
 
-To run this project, you will need Python 3.8+ and pip installed on your system. Clone the repository to your local machine using the following command:
+To run this project, you will need Python 3.8+ and pip installed on your system. **Python 3.11 or 3.12** is recommended for the smoothest install. On Python 3.14, some packages (e.g. Pillow, PyYAML) have been relaxed to newer versions in `requirements.txt`; if you still see build errors, create the venv with Python 3.12: `python3.12 -m venv env`. Clone the repository to your local machine using the following command:
 
 ```bash
   git clone https://github.com/hamzamgit/financial-app-backend.git
